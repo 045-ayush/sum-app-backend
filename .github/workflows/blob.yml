@@ -29,6 +29,6 @@ jobs:
           --account-key "$AZURE_STORAGE_KEY" \
           --container-name image \
           --name image.png \
-          --file assets/image1.png \
+          --file assets/image.png \
           --overwrite
 
