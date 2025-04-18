@@ -6,14 +6,14 @@ on:
       - dev
       - test
 
-jobs:
-  upload-to-azure-blob:
-    runs-on: ubuntu-latest
-
-    env:
+env:
       AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
       AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
 
+jobs:
+  upload-dev-assets:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/dev'
 
     steps:
     - name: Checkout repository
@@ -24,9 +24,8 @@ jobs:
         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
     - name: Upload assets_dev to 'dev' container
-      if: github.ref == 'refs/heads/dev'
       run: |
-        echo "Branch is dev. Uploading assets_dev to 'dev' container..."
+        echo "Uploading assets_dev to 'dev' container..."
         find assets_dev -type f | while read file; do
           blob_name=$(basename "$file")
           echo "Uploading $file as $blob_name..."
@@ -40,10 +39,21 @@ jobs:
         done
 
     # ---------- Test branch upload ----------
-    - name: Upload assets_test to 'test' container
-      if: github.ref == 'refs/heads/test'
+  upload-test-assets:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/test'
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Install Azure CLI
       run: |
-        echo "Branch is test. Uploading assets_test to 'test' container..."
+        curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+
+    - name: Upload assets_test to 'test' container
+      run: |
+        echo "Uploading assets_test to 'test' container..."
         find assets_test -type f | while read file; do
           blob_name=$(basename "$file")
           echo "Uploading $file as $blob_name..."
@@ -55,4 +65,3 @@ jobs:
             --file "$file" \
             --overwrite
         done
-
