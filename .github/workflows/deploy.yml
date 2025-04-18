@@ -19,11 +19,11 @@ jobs:
 
       - name: build image
         run: |
-          docker build -t ayushwmp/backend:2 .
+          docker build -t ayushwmp/backend:3 .
 
       - name: Push Docker image
         run: |
-          docker push ayushwmp/backend:2
+          docker push ayushwmp/backend:3
 
       - name: Copy SSH key
         run: |
@@ -34,5 +34,5 @@ jobs:
         run: |
             ssh -o StrictHostKeyChecking=no -i ~/sum-app-key.pem azureuser@52.186.170.5 << 'EOF'
                 docker rm -f backend
-                docker run -d --name backend --network my-net ayushwmp/backend:2
+                docker run -d --name backend --network my-net ayushwmp/backend:3
             EOF
