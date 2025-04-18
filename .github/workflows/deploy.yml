@@ -16,7 +16,7 @@ jobs:
         uses: trstringer/manual-approval@v1
         with:
           secret: ${{ github.token }}
-          approvers: 045-ayush
+          approvers: 045ayush
           minimum-approvals: 1
           issue-title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
           issue-body: |
@@ -26,7 +26,7 @@ jobs:
             `${{ github.sha }}`
 
             ✅ Only the following users are authorized to approve:
-            - `045-ayush`
+            - `045ayush`
 
             Comment with **"approve"** to proceed.
 
