@@ -1,0 +1,25 @@
+{
+  "name": "sum-app-backend",
+  "version": "1.0.0",
+  "description": "backend for sum app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/045-ayush/sum-app-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/045-ayush/sum-app-backend/issues"
+  },
+  "homepage": "https://github.com/045-ayush/sum-app-backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^5.1.0"
+  }
+}
