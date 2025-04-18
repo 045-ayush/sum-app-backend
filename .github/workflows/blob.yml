@@ -4,12 +4,16 @@ on:
   push:
     branches: 
       - dev
-    # paths:
-    #   - 'assets/image.png'
+      - test
 
 jobs:
   upload-to-azure-blob:
     runs-on: ubuntu-latest
+
+    env:
+      AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+      AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+
 
     steps:
     - name: Checkout repository
@@ -19,16 +23,36 @@ jobs:
       run: |
         curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
 
-    - name: Upload image to Azure Blob Storage
-      env:
-        AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
-        AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+    - name: Upload assets_dev to 'dev' container
+      if: github.ref == 'refs/heads/dev'
       run: |
-        az storage blob upload \
-          --account-name $AZURE_STORAGE_ACCOUNT \
-          --account-key "$AZURE_STORAGE_KEY" \
-          --container-name image \
-          --name image.png \
-          --file assets/image.png \
-          --overwrite
+        echo "Branch is dev. Uploading assets_dev to 'dev' container..."
+        find assets_dev -type f | while read file; do
+          blob_name=$(basename "$file")
+          echo "Uploading $file as $blob_name..."
+          az storage blob upload \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --account-key "$AZURE_STORAGE_KEY" \
+            --container-name dev \
+            --name "$blob_name" \
+            --file "$file" \
+            --overwrite
+        done
+
+    # ---------- Test branch upload ----------
+    - name: Upload assets_test to 'test' container
+      if: github.ref == 'refs/heads/test'
+      run: |
+        echo "Branch is test. Uploading assets_test to 'test' container..."
+        find assets_test -type f | while read file; do
+          blob_name=$(basename "$file")
+          echo "Uploading $file as $blob_name..."
+          az storage blob upload \
+            --account-name $AZURE_STORAGE_ACCOUNT \
+            --account-key "$AZURE_STORAGE_KEY" \
+            --container-name test \
+            --name "$blob_name" \
+            --file "$file" \
+            --overwrite
+        done
 
