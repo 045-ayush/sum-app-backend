@@ -4,8 +4,8 @@ on:
   push:
     branches: 
       - dev
-    paths:
-      - 'assets/image.png'
+    # paths:
+    #   - 'assets/image.png'
 
 jobs:
   upload-to-azure-blob:
