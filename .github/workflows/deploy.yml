@@ -38,7 +38,8 @@ jobs:
       - name: SSH into VM and restart container
         run: |
             ssh -o StrictHostKeyChecking=no -i ~/sum-app-key.pem azureuser@52.186.170.5 << 'EOF'
-                docker pull ayushwmp/backend:${{ env.VERSION }}
                 docker rm -f backend
+                docker pull ayushwmp/backend:${{ env.VERSION }}
                 docker run -d --name backend --network my-net ayushwmp/backend:${{ env.VERSION }}
+                docker image prune -af
             EOF
