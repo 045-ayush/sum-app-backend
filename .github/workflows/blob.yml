@@ -5,7 +5,7 @@ on:
     branches: 
       - dev
     paths:
-      - 'assets/image1.png'
+      - 'assets/image.png'
 
 jobs:
   upload-to-azure-blob:
