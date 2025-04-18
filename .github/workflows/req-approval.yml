@@ -12,7 +12,7 @@ jobs:
         uses: peter-evans/create-issue-from-file@v5
         with:
           title: "Deploy Approval Needed for Commit ${{ github.sha }}"
-          content-filepath: .github/approval-template.md
+          content-filepath: .github/approval.md
           labels: approval, pending
           assignees: 045-ayush
 
