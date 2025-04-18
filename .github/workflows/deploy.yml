@@ -15,7 +15,7 @@ jobs:
       - name: Wait for manual approval
         uses: trstringer/manual-approval@v1
         with:
-          secret: ${{ github.token }}
+          secret: ${{ secrets.PERSONAL_TOKEN }}
           approvers: 045ayush
           minimum-approvals: 1
           issue-title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
