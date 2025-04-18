@@ -64,3 +64,5 @@ jobs:
             docker run -d --name backend --network my-net ayushwmp/backend:${{ env.VERSION }}
             docker image prune -af
           EOF
+
+          
