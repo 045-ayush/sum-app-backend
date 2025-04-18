@@ -7,26 +7,31 @@ on:
 jobs:
   request-approval:
     runs-on: ubuntu-latest
-    outputs:
-      approved: ${{ steps.wait-for-approval.outputs.approved }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create Manual Approval Issue and Wait
-        id: wait-for-approval
-        uses: toppulous/create-manual-approval-issue@v1
+      - name: Wait for manual approval
+        uses: trstringer/manual-approval@v1
         with:
-          github-token: ${{ secrets.PERSONAL_TOKEN }}  # Or use ${{ github.token }} if permissions are sufficient
-          label: deployment-approval
-          title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
-          body: |
-            ### Deployment Approval Needed
+          secret: ${{ github.token }}
+          approvers: 045-ayush
+          minimum-approvals: 1
+          issue-title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
+          issue-body: |
+            ### 🚀 Deployment Approval Needed
 
-            Please review and **close this issue** to approve deployment for commit:
+            Please review and approve the deployment for commit:
             `${{ github.sha }}`
 
-            Only authorized personnel should close this issue.
+            ✅ Only the following users are authorized to approve:
+            - `045-ayush`
+
+            Comment with **"approve"** to proceed.
+
+          exclude-workflow-initiator-as-approver: true
+          fail-on-denial: true
 
   deploy:
     name: Build and Deploy
@@ -64,5 +69,3 @@ jobs:
             docker run -d --name backend --network my-net ayushwmp/backend:${{ env.VERSION }}
             docker image prune -af
           EOF
-
-          
