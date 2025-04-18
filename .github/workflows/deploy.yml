@@ -1,12 +1,13 @@
 name: backend deployment
 
 on:
-  push:
-    branches:
-      - main
+  issue_comment:
+    types: [created]
 
 jobs:
   build-and-deploy:
+    if: contains(github.event.issue.title, 'Deploy Approval Needed for Commit') && github.event.comment.body == '/approve' && github.event.comment.user.login == '045-ayush'
+
     name: build image, publish image & run on VM
     runs-on: ubuntu-latest
 
