@@ -1,36 +1,38 @@
-name: backend deployment with approval
+name: backend deployment with manual approval
 
 on:
   push:
     branches: [main]
-  issue_comment:
-    types: [created]
 
 jobs:
   request-approval:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
+    outputs:
+      approved: ${{ steps.wait-for-approval.outputs.approved }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Create approval issue
-        uses: peter-evans/create-issue-from-file@v5
+      - name: Create Manual Approval Issue and Wait
+        id: wait-for-approval
+        uses: toppulous/create-manual-approval-issue@v1
         with:
-          title: "Deploy Approval Needed for Commit ${{ github.sha }}"
-          content-filepath: .github/approval.md
-          labels: approval, pending
-          assignees: 045-ayush
-          token: ${{ secrets.PERSONAL_TOKEN }}
+          github-token: ${{ secrets.PERSONAL_TOKEN }}  # Or use ${{ github.token }} if permissions are sufficient
+          label: deployment-approval
+          title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
+          body: |
+            ### Deployment Approval Needed
 
-  build-and-deploy:
-    if: |
-      github.event_name == 'issue_comment' &&
-      contains(github.event.issue.title, 'Deploy Approval Needed for Commit') &&
-      github.event.comment.body == '/approve' &&
-      github.event.comment.user.login == '045-ayush'
+            Please review and **close this issue** to approve deployment for commit:
+            `${{ github.sha }}`
+
+            Only authorized personnel should close this issue.
+
+  deploy:
+    name: Build and Deploy
     runs-on: ubuntu-latest
-    name: build image, publish image & run on VM
+    needs: request-approval
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,18 +40,16 @@ jobs:
       - name: Log in to Docker Hub
         run: docker login docker.io -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
-      - name: extracting version from package.json
+      - name: Extract version from package.json
         run: |
           VERSION=$(jq -r .version package.json)
           echo "VERSION=$VERSION" >> $GITHUB_ENV
 
-      - name: build image
-        run: |
-          docker build -t ayushwmp/backend:${{ env.VERSION }} .
+      - name: Build Docker image
+        run: docker build -t ayushwmp/backend:${{ env.VERSION }} .
 
       - name: Push Docker image
-        run: |
-          docker push ayushwmp/backend:${{ env.VERSION }}
+        run: docker push ayushwmp/backend:${{ env.VERSION }}
 
       - name: Copy SSH key
         run: |
@@ -64,5 +64,3 @@ jobs:
             docker run -d --name backend --network my-net ayushwmp/backend:${{ env.VERSION }}
             docker image prune -af
           EOF
-
-          
