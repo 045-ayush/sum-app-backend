@@ -11,7 +11,7 @@ app.post('/sum', (req, res) => {
   const { num1, num2 } = req.body;
   const sum = Number(num1) + Number(num2);
   res.json({
-    "version": 2,
+    "version": "1.0.0",
     "sum": sum
   });
 });

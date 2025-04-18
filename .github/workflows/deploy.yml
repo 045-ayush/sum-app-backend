@@ -17,13 +17,18 @@ jobs:
       - name: Log in to Docker Hub
         run: docker login docker.io -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
 
+      - name: extracting version from package.json
+        run: |
+            VERSION=$(jq -r .version package.json)
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+
       - name: build image
         run: |
-          docker build -t ayushwmp/backend:3 .
+          docker build -t ayushwmp/backend:${{ env.VERSION }} .
 
       - name: Push Docker image
         run: |
-          docker push ayushwmp/backend:3
+          docker push ayushwmp/backend:${{ env.VERSION }}
 
       - name: Copy SSH key
         run: |
@@ -34,5 +39,5 @@ jobs:
         run: |
             ssh -o StrictHostKeyChecking=no -i ~/sum-app-key.pem azureuser@52.186.170.5 << 'EOF'
                 docker rm -f backend
-                docker run -d --name backend --network my-net ayushwmp/backend:3
+                docker run -d --name backend --network my-net ayushwmp/backend:${{ env.VERSION }}
             EOF
