@@ -18,5 +18,6 @@ jobs:
           content-filepath: .github/approval.md
           labels: approval, pending
           assignees: 045-ayush
+          token: ${{ secrets.PERSONAL_TOKEN }}
 
 
