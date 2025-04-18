@@ -2,7 +2,8 @@ name: Upload Image to Azure Blob
 
 on:
   push:
-    branches: [dev]
+    branches: 
+      - dev
     paths:
       - 'assets/image1.png'
 
@@ -30,4 +31,3 @@ jobs:
           --file assets/image1.png \
           --overwrite
 
-          
