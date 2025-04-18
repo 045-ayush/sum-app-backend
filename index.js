@@ -10,7 +10,10 @@ app.use(express.json());
 app.post('/sum', (req, res) => {
   const { num1, num2 } = req.body;
   const sum = Number(num1) + Number(num2);
-  res.json({ sum });
+  res.json({
+    "version": 2,
+    "sum": sum
+  });
 });
 
 app.listen(PORT, () => {

@@ -1,0 +1,37 @@
+name: backend deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    name: build image, publish image & run on VM
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Log in to Docker Hub
+        run: docker login docker.io -u "${{ secrets.DOCKER_USERNAME }}" -p "${{ secrets.DOCKER_PASSWORD }}"
+
+      - name: build image
+        run: |
+          docker build -t ayushwmp/backend:1 .
+
+      - name: Push Docker image
+        run: |
+          docker push ayushwmp/backend:1
+
+      - name: Copy SSH key
+        run: |
+          echo "${{ secrets.VM_SSH_KEY }}" > ~/sum-app-key.pem
+          chmod 600 ~/sum-app-key.pem
+
+      - name: SSH into VM and restart container
+        run: |
+            ssh -i ~/sum-app_key.pem azureuser@52.186.170.5
+            docker rm -f backend
+            docker run -d --name backend --network my-net ayushwmp/backend:1
