@@ -20,12 +20,12 @@ jobs:
           minimum-approvals: 1
           issue-title: "[Deploy Approval] Confirm deployment for commit ${{ github.sha }}"
           issue-body: |
-            ### 🚀 Deployment Approval Needed
+            ### Deployment Approval Needed
 
             Please review and approve the deployment for commit:
             `${{ github.sha }}`
 
-            ✅ Only the following users are authorized to approve:
+            Only the following users are authorized to approve:
             - `045ayush`
 
             Comment with **"approve"** to proceed.
